@@ -63,3 +63,26 @@
   background: #57A957;
   border: 1px solid #4c964d;
   color: #FFF; }
+ol, ul {
+    list-style: none;
+}
+ul.posts {
+    width: 70%;
+    margin: 0 auto;
+}
+ul.posts li {
+    margin-bottom: 70px;
+}
+ul.posts li  h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+ul.posts li  h2 a {
+    color: #444;
+}
+ul.posts li .title-desc {
+    color: #999;
+    font-size: 14px;
+    line-height: 1.6em;
+} 
+
