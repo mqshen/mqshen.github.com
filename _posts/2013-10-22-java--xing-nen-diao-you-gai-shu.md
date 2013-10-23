@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Java 性能调优"
+title: "Java 性能调优概述"
 description: "性能分析与调优是个非常庞大的课题。调优的唯一秘诀就是你必须量体裁衣。没有评测，就没有合适的调。"
 category: ""
 tags: []
@@ -58,11 +58,11 @@ tags: []
 #####  直接测量
 直接测量是最容易理解的技术。最简单的是像下面这种形式:
 
->  long t0 = System.currentTimeMillis();
->  someMethonToCall();
->  long t1 = System.currentTimeMillis();
->  long elapsed = t1 - t0;
->  System.out.println("someMethonToCall took " + elapsed + "millis");
+    long t0 = System.currentTimeMillis();
+    someMethonToCall();
+    long t1 = System.currentTimeMillis();
+    long elapsed = t1 - t0;
+    System.out.println("someMethonToCall took " + elapsed + "millis");
 
 但它是侵入式的。需要到处添加这种代码,而且随着测量结果不断增多,代码很容易被数据淹没。除此之外还有其他问题,如果someMethonToCall运行时长不足一毫秒会出现什么情 况?
 
@@ -142,4 +142,11 @@ Java中有两个获取时间的方法:
 
 后面一个用于测量比毫秒更精确的时间,但它可能偏离钟表时间。
 这就是说对于间隔较长的时间,nanoTime()基本上是不可信的。只能用它测量较短的时间 间隔,较长(宏观)的时间间隔应该用currentTimeMillis()
+
+##### 时间在性能调优中的作用
+*   精确度
+*   准确度
+*   粒度
+*   分布式网络计时
+
 
