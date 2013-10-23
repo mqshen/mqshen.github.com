@@ -5,6 +5,65 @@ description: "Java与C++之间有一堵由内存动态分配和垃圾收集技�
 tags: [JVM调优]
 ---
 {% include JB/setup %}
+    java version "1.7.0_40"
+    Java(TM) SE Runtime Environment (build 1.7.0_40-b43)
+    Java HotSpot(TM) 64-Bit Server VM (build 24.0-b56, mixed mode)
+
+#### Java堆
+Java堆存放的是对象实例，因此只要不断建立对象，并且保证GC Roots到对象之间有可达路径即可产生OOM异常。测试中限制Java堆大小为20M，不可扩展，通过参数-XX:+HeapDumpOnOutOfMemoryError让虚拟机在出现OOM异常的时候Dump出内存映像以便分析。（关于Dump映像文件分析方面的内容，可参见本文第三章《JVM内存管理：深入JVM内存异常分析与调优》。）
+
+清单1：Java堆OOM测试
+
+    package org.goldratio.memory;
+    
+    import java.util.ArrayList;
+    import java.util.List;
+    
+    /**
+    * VM Args：-Xms20m -Xmx20m -XX:+HeapDumpOnOutOfMemoryError
+    */
+    public class HeapOOM {
+    
+          static class OOMObject {
+          }
+    
+          public static void main(String[] args) {
+                 List<OOMObject> list = new ArrayList<OOMObject>();
+    
+                 while (true) {
+                        list.add(new OOMObject());
+                 }
+          }
+    }
+
+运行结果：
+
+    java.lang.OutOfMemoryError: Java heap space
+    Dumping heap to java_pid1276.hprof ...
+    Heap dump file created [27561240 bytes in 0.180 secs]
+
+#### VM栈和本地方法栈
+Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上是无效的，栈容量只由-Xss参数设定。关于VM栈和本地方法栈在VM Spec描述了两种异常：StackOverflowError与OutOfMemoryError，当栈空间无法继续分配分配时，到底是内存太小还是栈太大其实某种意义上是对同一件事情的两种描述而已，在实验中，对于单线程应用尝试下面2种方法均无法让虚拟机产生OOM，全部尝试结果都是获得SOF异常。
+1. 使用-Xss参数削减栈内存容量。结果：抛出SOF异常时的堆栈深度相应缩小。
+2. 定义大量的本地变量，增大此方法对应帧的长度。结果：抛出SOF异常时的堆栈深度相应缩小。
+<!--
+3. 创建几个定义很多本地变量的复杂对象，打开逃逸分析和标量替换选项，使得JIT编译器允许对象拆分后在栈中分配。结果：实际效果同第二点。
+-->
+
+清单2：VM栈和本地方法栈OOM测试（仅作为第1点测试程序）
+
+    package org.goldratio.memory;
+    
+    /**
+     * VM Args：-Xss256k
+     */
+    public class JavaVMStackSOF {
+     
+           private int stackLength = 1;
+     
+           public void stackLeak() {
+                  stackLength++;
+                  stackLeak();
            }
      
            public static void main(String[] args) throws Throwable {
