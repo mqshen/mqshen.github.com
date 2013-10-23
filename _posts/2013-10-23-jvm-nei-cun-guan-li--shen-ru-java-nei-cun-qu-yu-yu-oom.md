@@ -1,10 +1,12 @@
 ---
 layout: post
-title: "JVM内存管理"
+title: "JVM内存管理：深入Java内存区域与OOM"
 description: "Java与C++之间有一堵由内存动态分配和垃圾收集技术所围成的高墙，墙外面的人想进去，墙里面的人却想出来。"
+category: ""
 tags: [JVM调优]
 ---
 {% include JB/setup %}
+
 ### 概述：
 对于从事C、C++程序开发的开发人员来说，在内存管理领域，他们即是拥有最高权力的皇帝又是执行最基础工作的劳动人民——拥有每一个对象的“所有权”，又担负着每一个对象生命开始到终结的维护责任。  
 对于Java程序员来说，不需要在为每一个new操作去写配对的delete/free，不容易出现内容泄漏和内存溢出错误，看起来由JVM管理内存一切都很美好。不过，也正是因为Java程序员把内存控制的权力交给了JVM，一旦出现泄漏和溢出，如果不了解JVM是怎样使用内存的，那排查错误将会是一件非常困难的事情。
@@ -86,6 +88,9 @@ Java堆存放的是对象实例，因此只要不断建立对象，并且保证G
 Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上是无效的，栈容量只由-Xss参数设定。关于VM栈和本地方法栈在VM Spec描述了两种异常：StackOverflowError与OutOfMemoryError，当栈空间无法继续分配分配时，到底是内存太小还是栈太大其实某种意义上是对同一件事情的两种描述而已，在实验中，对于单线程应用尝试下面2种方法均无法让虚拟机产生OOM，全部尝试结果都是获得SOF异常。
 1. 使用-Xss参数削减栈内存容量。结果：抛出SOF异常时的堆栈深度相应缩小。
 2. 定义大量的本地变量，增大此方法对应帧的长度。结果：抛出SOF异常时的堆栈深度相应缩小。
+<!--
+3. 创建几个定义很多本地变量的复杂对象，打开逃逸分析和标量替换选项，使得JIT编译器允许对象拆分后在栈中分配。结果：实际效果同第二点。
+-->
 
 清单2：VM栈和本地方法栈OOM测试（仅作为第1点测试程序）
 
@@ -118,7 +123,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
 
     stack length:1891Exception in thread "main" 
     java.lang.StackOverflowError
-        at org.goldratio.memory.JavaVMStackSOF.stackLeak(JavaVMStackSOF.java:11)
+    	at org.goldratio.memory.JavaVMStackSOF.stackLeak(JavaVMStackSOF.java:11)
 
 如果在多线程环境下，不断建立线程倒是可以产生OOM异常。原因其实很好理解，操作系统分配给每个进程的内存是有限制的，譬如32位Windows限制为2G，Java堆和方法区的大小JVM有参数可以限制最大值，那剩余的内存为2G（操作系统限制）-Xmx（最大堆）-MaxPermSize（最大方法区），程序计数器消耗内存很小，可以忽略掉，那虚拟机进程本身耗费的内存不计算的话，剩下的内存就供每一个线程的VM栈和本地方法栈瓜分了，那自然每个线程中VM栈分配内存越多，就越容易把剩下的内存耗尽。
 
@@ -136,15 +141,15 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
      */
     public class RuntimeConstantPoolOOM {
     
-        public static void main(String[] args) {
-            // 使用List保持着常量池引用，压制Full GC回收常量池行为
-            List<String> list = new ArrayList<String>();
-            // 10M的PermSize在integer范围内足够产生OOM了
-            int i = 0;
-            while (true) {
-                list.add(String.valueOf(i++).intern());
-            }
-        }
+    	public static void main(String[] args) {
+    		// 使用List保持着常量池引用，压制Full GC回收常量池行为
+    		List<String> list = new ArrayList<String>();
+    		// 10M的PermSize在integer范围内足够产生OOM了
+    		int i = 0;
+    		while (true) {
+    			list.add(String.valueOf(i++).intern());
+    		}
+    	}
     }
 
 未出现异常，监控jvm看到Heap一直在增长。这是因为Java7 String.intern 被分配再了Heap中.
@@ -168,26 +173,26 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
      */
     public class JavaMethodAreaOOM {
     
-        public static void main(String[] args) {
-            while (true) {
-                Enhancer enhancer = new Enhancer();
-                enhancer.setSuperclass(OOMObject.class);
-                enhancer.setUseCache(false);
-                enhancer.setCallback(new MethodInterceptor() {
+    	public static void main(String[] args) {
+    		while (true) {
+    			Enhancer enhancer = new Enhancer();
+    			enhancer.setSuperclass(OOMObject.class);
+    			enhancer.setUseCache(false);
+    			enhancer.setCallback(new MethodInterceptor() {
     
-                    @Override
-                    public Object intercept(Object obj, Method method,
-                            Object[] args, MethodProxy proxy) throws Throwable {
-                        return proxy.invokeSuper(obj, args);
-                    }
-                });
-                enhancer.create();
-            }
-        }
+    				@Override
+    				public Object intercept(Object obj, Method method,
+    						Object[] args, MethodProxy proxy) throws Throwable {
+    					return proxy.invokeSuper(obj, args);
+    				}
+    			});
+    			enhancer.create();
+    		}
+    	}
     
-        static class OOMObject {
+    	static class OOMObject {
     
-        }
+    	}
     }
 
 运行结果：
@@ -206,4 +211,3 @@ DirectMemory容量可通过-XX:MaxDirectMemorySize指定，不指定的话默认
 >   [高级语言虚拟机知识库-JVM基础](http://hllvm.group.iteye.com/group/wiki?category_id=316)  
 >   [Java Performance](http://book.douban.com/subject/5980062/)  
 >   [Java SE 7 ](http://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html)
-
