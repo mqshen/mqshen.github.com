@@ -152,7 +152,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
     	}
     }
 
-未出现异常，监控jvm看到Heap一直在增长。这是因为Java7 String.intern 被分配再了Heap中参见[Java SE 7 ](http://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html)
+未出现异常，监控jvm看到Heap一直在增长。这是因为Java7 String.intern 被分配再了Heap中.
 
 #### 方法区
 上文讲过，方法区用于存放Class相关信息，所以这个区域的测试我们借助CGLib直接操作字节码动态生成大量的Class，值得注意的是，这里我们这个例子中模拟的场景其实经常会在实际应用中出现：当前很多主流框架，如Spring、Hibernate对类进行增强时，都会使用到CGLib这类字节码技术，当增强的类越多，就需要越大的方法区用于保证动态生成的Class可以加载入内存。
@@ -205,3 +205,9 @@ DirectMemory容量可通过-XX:MaxDirectMemorySize指定，不指定的话默认
 
 ### 总结
 到此为止，我们弄清楚虚拟机里面的内存是如何划分的，哪部分区域，什么样的代码、操作可能导致OOM异常。虽然Java有垃圾收集机制，但OOM仍然离我们并不遥远，本章内容我们只是知道各个区域OOM异常出现的原因，下一章我们将看看Java垃圾收集机制为了避免OOM异常出现，做出了什么样的努力。
+
+
+#### 参考资料
+>   [高级语言虚拟机知识库-JVM基础](http://hllvm.group.iteye.com/group/wiki?category_id=316)  
+>   [Java Performance](http://book.douban.com/subject/5980062/)  
+>   [Java SE 7 ](http://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html)
