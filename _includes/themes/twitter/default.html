@@ -48,9 +48,27 @@
 
     <div class="container-narrow">
 
-      <div class="content">
-        {{ content }}
-      </div>
+        <div class="wrapper">
+            <div class="content">
+              {{ content }}
+            </div>
+            <div class="side_bar">
+                <aside >
+                    <h3 class="title">个人介绍</h3>
+                    <ul class="">
+                        <li><a href="https://github.com/mqshen" target="_blank" title="">mqshen</a></li>
+                        <li>@BeiJing</li>
+                    </ul>
+                </aside>
+                <aside >
+                    <h3 class="title">文章分类</h3>
+                    <ul class="tag_box">
+                        {% assign tags_list = site.tags %}  
+                        {% include JB/tags_list %}
+                    </ul>
+                </aside>
+            </div>
+        </div>
       <hr>
       <footer>
         <p>&copy; {{ site.time | date: '%Y' }} {{ site.author.name }}

@@ -1,8 +1,30 @@
 /* Custom container */
 .container-narrow {
   margin: 0 auto;
-  max-width: 700px; }
+  max-width: 960px; }
 
+.container-narrow .content{
+    float: left;
+}
+
+.container-narrow .side_bar h3 {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #636363;
+}
+
+.wrapper:before, .wrapper:after {
+    display: table;
+content: "";
+}
+.wrapper:after {
+    clear: both;
+}
+footer {
+width: 450px;
+margin: 0 auto;
+}
 .container-narrow > hr {
   margin: 30px 0; }
 
