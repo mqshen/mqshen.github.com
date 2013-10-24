@@ -14,6 +14,7 @@ tags: [JVM调优]
 ### VM运行时数据区域
 JVM执行Java程序的过程中，会使用到各种数据区域，这些区域有各自的用途、创建和销毁时间。根据《Java虚拟机规范（第二版）》（下文称VM Spec）的规定，JVM包括下列几个运行时数据区域：
 
+![jvm 内存]({{ BASE_PATH }}/assets/images/jvmMemory.png)
 #### 1.程序计数器（Program Counter Register）：
 >   每一个Java线程都有一个程序计数器来用于保存程序执行到当前方法的哪一个指令，对于非Native方法，这个区域记录的是正在执行的VM原语的地址，如果正在执行的是Natvie方法，这个区域则为空（undefined）。此内存区域是唯一一个在VM Spec中没有规定任何OutOfMemoryError情况的区域。
 
