@@ -57,6 +57,7 @@ Java堆存放的是对象实例，因此只要不断建立对象，并且保证G
 
 清单1：Java堆OOM测试
 
+{% highlight java linenos %}
     package org.goldratio.memory;
     
     import java.util.ArrayList;
@@ -78,6 +79,7 @@ Java堆存放的是对象实例，因此只要不断建立对象，并且保证G
                  }
           }
     }
+{% endhighlight %}
 
 运行结果：
 
@@ -92,6 +94,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
 
 清单2：VM栈和本地方法栈OOM测试（仅作为第1点测试程序）
 
+{% highlight java linenos %}
     package org.goldratio.memory;
     
     /**
@@ -116,6 +119,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
                   }
            }
     }
+{% endhighlight %}
 
 运行结果：
 
@@ -129,6 +133,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
 要在常量池里添加内容，最简单的就是使用String.intern()这个Native方法。由于常量池分配在方法区内，我们只需要通过-XX:PermSize和-XX:MaxPermSize限制方法区大小即可限制常量池容量。实现代码如下：
 清单4：运行时常量池导致的OOM异常
 
+{% highlight java linenos %}
     package org.goldratio.memory;
     
     import java.util.ArrayList;
@@ -149,6 +154,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
     		}
     	}
     }
+{% endhighlight %}
 
 未出现异常，监控jvm看到Heap一直在增长。这是因为Java7 String.intern 被分配再了Heap中.
 
@@ -156,6 +162,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
 上文讲过，方法区用于存放Class相关信息，所以这个区域的测试我们借助CGLib直接操作字节码动态生成大量的Class，值得注意的是，这里我们这个例子中模拟的场景其实经常会在实际应用中出现：当前很多主流框架，如Spring、Hibernate对类进行增强时，都会使用到CGLib这类字节码技术，当增强的类越多，就需要越大的方法区用于保证动态生成的Class可以加载入内存。
 清单5：借助CGLib使得方法区出现OOM异常
 
+{% highlight java linenos %}
     package org.goldratio.memory;
     
     import java.lang.reflect.Method;
@@ -192,6 +199,7 @@ Hotspot虚拟机并不区分VM栈和本地方法栈，因此-Xoss参数实际上
     
     	}
     }
+{% endhighlight %}
 
 运行结果：
 
