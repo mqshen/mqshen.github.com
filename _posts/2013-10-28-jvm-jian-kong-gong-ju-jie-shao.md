@@ -3,7 +3,7 @@ layout: post
 title: "JVM监控工具介绍"
 description: "JVM监控工具介绍 jps jmap"
 category: ""
-tags: [JVM performance]
+tags: [Java performance]
 ---
 {% include JB/setup %}
 
@@ -199,3 +199,13 @@ $ jmap -histo 10019|head -30
     $ jmap -dump:live,format=b,file=heap.hprof 10019
 {% endhighlight %}
 导出结果可以用来做离线分析,可以留给jmap以后自己用,也可以留给Oracle的jhat等工具做高级分析.
+
+### VisualVM
+
+VisualVM是Oracle JVM自带的可视化工具。它是插件架构,采用标准配置,比JConsole用起来更方便。
+
+{% highlight sh linenos %}
+    $jvisualvm
+{% endhighlight %}
+如图所示:
+![VisualVM]({{ BASE_PATH }}/assets/images/jvisualvm.png)

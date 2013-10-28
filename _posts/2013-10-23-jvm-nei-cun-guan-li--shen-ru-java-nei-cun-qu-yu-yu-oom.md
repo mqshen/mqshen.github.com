@@ -3,7 +3,7 @@ layout: post
 title: "JVM内存管理：深入Java内存区域与OOM"
 description: "Java与C++之间有一堵由内存动态分配和垃圾收集技术所围成的高墙，墙外面的人想进去，墙里面的人却想出来。"
 category: ""
-tags: [JVM调优]
+tags: [Java performance]
 ---
 {% include JB/setup %}
 

@@ -1,8 +1,13 @@
 /* Custom container */
 .container-narrow {
   margin: 0 auto;
-  max-width: 960px; }
+  max-width: 960px; 
+  }
 
+.container-narrow .wrapper .content{
+  width: 786px; 
+
+}
 .container-narrow .content{
     float: left;
 }
