@@ -27,7 +27,7 @@ org.eclipse.jetty.start.Main为Jetty的启动类。
 
     <Set name="port">8080</Set>
     
-启动顺序如下图
+启动顺序如下图 其中的异步调用没有标识出来'
 
 ![jetty start]({{ BASE_PATH }}/assets/images/JettyStart.png)
 
