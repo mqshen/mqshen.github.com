@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Jetty源码阅读 Handler"
-description: ""
+description: "Jetty是基于Handler的服务器框架,主要详细介绍每个handle的作用和ScopedHandler的作用。"
 category: ""
 tags: [Jetty]
 ---
