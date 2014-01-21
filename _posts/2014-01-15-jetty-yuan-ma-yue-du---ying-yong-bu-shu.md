@@ -48,3 +48,9 @@ Jetty 应用部署管理器是由在Jetty启动时加入Server的
 
 ![Jetty Deploy]({{ BASE_PATH }}/assets/images/JettyDeploy.png)
 
+web.xml会在WebXmlConfiguration中初始化.结果会到WebAppContext的_metaData中.并使用WebDescriptor来初始化。
+使用annotation时，需要调用AnnotationConfiguration的scanForAnnotations方法扫描annotation.
+这个方法会调用asm库来扫描annotation.扫描结果会加入到WebAppContext的_metaData中。这个对象将在WebAppContext的startContext中初始化.
+
+
+web.xml会在WebXmlConfiguration中初始化.结果会加入到WebAppContext的_metaData中
