@@ -87,7 +87,7 @@ tags: [spark, cluster]
 hadoop的日志在$hadoop_home/logs/目录下
 
 
-##Spark Cluster使用Mesos作为Cluster Manger所以我们接下来安装Mesos
+#####Spark Cluster使用Mesos作为Cluster Manger所以我们接下来安装Mesos
 
 ###Mesos安装
 为系统添加YUM源    
