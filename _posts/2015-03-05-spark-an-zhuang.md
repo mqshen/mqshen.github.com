@@ -7,7 +7,8 @@ tags: [spark, cluster]
 ---
 {% include JB/setup %}
 系统为CentOS
-##Spark用HDFS做数据存储所以我们先安装hadoop    
+
+#####Spark用HDFS做数据存储所以我们先安装hadoop    
 
 ###hadoop安装    
 
