@@ -3,7 +3,7 @@ layout: post
 title: "Zookeeper 处理失败"
 description: "zookeeper的失败处理机制"
 category: "Zookeeper"
-tags: [Zookeeper, distribute]
+tags: [zookeeper, distribute]
 ---
 {% include JB/setup %}
 

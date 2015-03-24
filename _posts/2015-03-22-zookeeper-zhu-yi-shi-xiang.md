@@ -3,7 +3,7 @@ layout: post
 title: "Zookeeper注意事项"
 description: "Zookeeper一些需要注意的地方"
 category: ""
-tags: []
+tags: [zookeeper]
 ---
 {% include JB/setup %}
 
