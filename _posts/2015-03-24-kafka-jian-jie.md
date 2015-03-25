@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "kafka简介"
+title: "Kafka简介"
 description: ""
 category: "kafka"
 tags: [kafka]
