@@ -47,7 +47,7 @@ Observers接受包含已提交proposal的INFORM信息。
 
 ###Leader Server    
 下图是leader的管道示意图：    
-![leader pipeline]({{ BASE_PATH }}/assets/images/zookeeper/pipleline.png)      
+![leader pipeline]({{ BASE_PATH }}/assets/images/zookeeper/pipeline.png)      
 
 下图是follower的管道示意图：    
 ![follower pipeline]({{ BASE_PATH }}/assets/images/zookeeper/follower.png)      
