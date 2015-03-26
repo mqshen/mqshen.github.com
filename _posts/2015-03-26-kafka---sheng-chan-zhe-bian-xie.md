@@ -24,10 +24,14 @@ tags: [kafka]
     props.put("request.required.acks",requestRequiredAcks.toString)
     props.put("client.id",clientId.toString)
 
-metadata.broker.list 定义的生产者所要练级的的broker地址<node:port>     
-serializer.class list 定义发送到broker的消息序列化所采用的class。默认情况下key和message所采用的类是一样的，但也可以指定key. serializer.class属性。     
+metadata.broker.list 定义的生产者所要连接的的broker地址<node:port>       
+
+serializer.class 定义发送到broker的消息序列化所采用的class。默认情况下key和message所采用的类是一样的，但也可以指定key. serializer.class属性。     
+
 request.required.acks 当broker收到消息时是否需要发送ack。(0:不需要ack,1:当broker收到消息时发送ack,-1:当所有在in-sync状态的replicas收到数据后才发送ack。    
+
 partitioner.class 定义message分区的class。如果key为null，Kafka将对消息采用随机分区方法。    
+
 producer.type 消息发送的模式，sync还是async。    
 
 
