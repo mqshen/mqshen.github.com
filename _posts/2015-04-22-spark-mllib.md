@@ -8,6 +8,7 @@ tags: []
 {% include JB/setup %}
 
 ###资源    
+
 [MLlib Programming Guide](http://spark.apache.org/docs/latest/mllib-guide.html)    
 [Databricks training info](http://databricks.com/spark-training)    
 [Spark user lists & community](http://spark.apache.org/community.html)    
