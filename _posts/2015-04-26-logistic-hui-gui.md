@@ -12,7 +12,7 @@ tags: []
 幸好，另一个函数也有类似的性质，且数学上更易处理，这就是Sigmoid函数。    
 Sigmoid函数具体的计算公式如下：    
 
-$$ \sigma(z)=\frac{1}{1+z^{-z}} $$    
+$$ \sigma(z)=\frac{1}{1+e^{-z}} $$    
 
 下图就是Sigmoid函数曲线    
 ![leader pipeline]({{ BASE_PATH }}/assets/images/machineLearning/Logistic-curve.svg.png)      
