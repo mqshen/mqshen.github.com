@@ -85,3 +85,10 @@ $$ \frac{\partial}{\partial \theta_j}\log(1+e^{\theta x^i})=\frac{x^i_je^{\theta
 
 $$ \theta_j := \theta_j - \alpha\sum_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})x_j^{(i)} $$
 
+
+除了梯度下降方法我们还可以使用    
+1. 共轭梯度法(Conjugate gradient)     
+2. BFGS    
+3. L-BFGS    
+
+这些方法的优势是不需要人工去选择 $$ \alpha $$ ,大多数情况下会比梯度下降快。
