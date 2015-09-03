@@ -53,7 +53,7 @@ $$
 $$ Cost(h_\theta(x), y) = -ylog(h_\theta(x)) - (1 - y)log(h_\theta(x)) $$    
 所以：
 
-$$ J(\theta) = -\frac{1}{m}[\sum_{i=1}^{m}y^{(i)}logh_\theta(x^{(i)} + (1 - y^{(i)})log(1 - h_\theta(x^{(i)}))] $$    
+$$ J(\theta) = -\frac{1}{m}\left[\sum_{i=1}^{m}y^{(i)}logh_\theta(x^{(i)} + (1 - y^{(i)})log(1 - h_\theta(x^{(i)}))\right] $$    
 
 由于    
 
