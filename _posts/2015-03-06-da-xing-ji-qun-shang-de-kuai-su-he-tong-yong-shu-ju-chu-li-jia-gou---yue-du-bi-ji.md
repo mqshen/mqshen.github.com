@@ -2,8 +2,8 @@
 layout: post
 title: "大型集群上的快速和通用数据处理架构 阅读笔记"
 description: "An Architecture for Fast and General Data Processing on Large Clusters"
-category: "Spark"
-tags: [Spark, cluster]
+category: "spark"
+tags: [spark, cluster]
 ---
 {% include JB/setup %}
 这个是对[Matei Zaharia](https://twitter.com/matei_zaharia)的论文[An Architecture for Fast and General Data Processing on Large Clusters](http://www.eecs.berkeley.edu/Pubs/TechRpts/2014/EECS-2014-12.pdf)的一些笔记

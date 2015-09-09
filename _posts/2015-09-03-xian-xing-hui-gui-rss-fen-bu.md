@@ -62,3 +62,5 @@ $$ \frac{\textrm{RSS}}{\sigma^2} \sim \chi^2_{n-p-1} $$
 因为 $$ Q^2 - Q =0, $$ Q的[最小化多项式](http://en.wikipedia.org/wiki/Minimal_polynomial_%28linear_algebra%29)除以多项式 $$ z^2 - z $$ 所以 $$ Q $$ 的特征值只有 $$ 0 $$ 或 $$ 1 $$ 。    
 由于 $$ \textrm{tr}(Q) = n - p - 1 $$ 且特征值的和为矩阵的迹,所以我们有 $$ 1 $$ 为 $$ n - p - 1 $$ 重特征值 $$ 0 $$ 为 $$ p + 1 $$ 重特征值     
 
+
+![参考](http://stats.stackexchange.com/questions/20227/why-is-rss-distributed-chi-square-times-n-p)
