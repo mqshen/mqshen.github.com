@@ -107,6 +107,17 @@ hadoop的日志在$hadoop_home/logs/目录下
 
 Mesos编译需要maven所以我们还需要安装maven这里就不多说了
 
+新版本的Mesos需要gcc 4.8以上这需要添加新的依赖
+
+    wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo
+    yum install devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++
+
+然后使用
+
+    scl enable devtoolset-2 bash 
+
+来启用devtoolset-2
+
 再用make工具进行安装
     
     $ cd mesos
