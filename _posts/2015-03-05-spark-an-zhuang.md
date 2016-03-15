@@ -8,11 +8,9 @@ tags: [spark, cluster]
 {% include JB/setup %}
 系统为CentOS
 
-Spark用HDFS做数据存储所以我们先安装hadoop    
-=========================================
+#####Spark用HDFS做数据存储所以我们先安装hadoop#####    
 
-hadoop安装    
-----------
+###hadoop安装###    
 
 1.master到slave的免登入SSH配置。
 
@@ -90,9 +88,9 @@ hadoop安装
 hadoop的日志在$hadoop_home/logs/目录下
 
 
-#####Spark Cluster使用Mesos作为Cluster Manger所以我们接下来安装Mesos
+#####Spark Cluster使用Mesos作为Cluster Manger所以我们接下来安装Mesos#####
 
-###Mesos安装
+###Mesos安装###
 为系统添加YUM源    
 新建文件 /etc/yum.repos.d/wandisco-svn.repo 内容为:
     
