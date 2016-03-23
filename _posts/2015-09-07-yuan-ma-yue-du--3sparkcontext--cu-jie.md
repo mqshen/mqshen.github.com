@@ -19,22 +19,22 @@ SparkContext是应用启动时创建的Spark上下文对象，是Spark上层应�
 SparkContext的构造函数中最重要的参数是SparkConf。
 SparkConf是通过一个HashMap来管理<key, value>类型的属性。
 
-{% highlight scala linenos %}
+~~~ scala
 private val settings = new ConcurrentHashMap[String, String]()
-{% endhighlight %}
+~~~
 
 ###创建LiveListenerBus监听器
 
-{% highlight scala linenos %}
+~~~ scala
 private[spark] val listenerBus = new LiveListenerBus
-{% endhighlight %}
+~~~
 
 它是典型的观察者模式。
 
 ####创建SparkEnv运行环境
 
 
-{% highlight scala linenos %}
+~~~ scala
 private[spark] def createSparkEnv(
 
     conf: SparkConf,
@@ -42,13 +42,13 @@ private[spark] def createSparkEnv(
     listenerBus: LiveListenerBus): SparkEnv = {
   SparkEnv.createDriverEnv(conf, isLocal, listenerBus)
 }
-{% endhighlight %}
+~~~
 
 
 在createDriverEnv中创建了MapOutputTracker,BlockManager,CacheManager,HttpFilerServer等一系列对象。
 
 
-{% highlight scala linenos %}
+~~~ scala
 val envInstance = new SparkEnv(
 
   executorId,
@@ -70,7 +70,7 @@ val envInstance = new SparkEnv(
   outputCommitCoordinator,
   conf)
 
-{% endhighlight %}
+~~~
 
 其中：
 
@@ -88,7 +88,7 @@ val envInstance = new SparkEnv(
 ###创建SparkUI
 
 
-{% highlight scala linenos %}
+~~~ scala
 ui =
 
   if (conf.getBoolean("spark.ui.enabled", true)) {
@@ -98,13 +98,13 @@ ui =
     // For tests, do not enable the UI
     None
   }
-{% endhighlight %}
+~~~
 
 
 创建SparkUI时会向listenerBus注册StorageStatusListener，它负责监听Storage的变化及时的展示到Spark Web上。
 
 
-{% highlight scala linenos %}
+~~~ scala
 def initialize() {
 
   attachTab(new JobsTab(this))
@@ -120,7 +120,7 @@ def initialize() {
     "/stages/stage/kill", "/stages/", stagesTab.handleKillRequest,
     httpMethods = Set("GET", "POST")))
 }
-{% endhighlight %}
+~~~
 
 
 attachTab方法中添加对象是我们在Spark Web页面中看到的那个标签。
@@ -128,33 +128,33 @@ attachTab方法中添加对象是我们在Spark Web页面中看到的那个标�
 ###创建TaskScheduler
 
 
-{% highlight scala linenos %}
+~~~ scala
 val (sched, ts) = SparkContext.createTaskScheduler(this, master)
 
 _schedulerBackend = sched
 _taskScheduler = ts
-{% endhighlight %}
+~~~
 
 
 createTaskScheduler会根据不同的master url创建不同的schedulerBackend和taskScheduler。他们在后续的task分发过程中扮演重要角色。
 
 ###创建DAGScheduler
 
-{% highlight scala linenos %}
+~~~ scala
 _dagScheduler = new DAGScheduler(this)
-{% endhighlight %}
+~~~
 
 
 DAGScheduler构造函数需要上面创建的taskScheduler。
 之后就会使用
 
-{% highlight scala linenos %}
+~~~ scala
 _taskScheduler.start()
-{% endhighlight %}
+~~~
 
 启动相应的SchedulerBackend,并启动定时器进行检测：
 
-{% highlight scala linenos %}
+~~~ scala
 override def start() {
 
   backend.start()
@@ -168,7 +168,7 @@ override def start() {
     }, SPECULATION_INTERVAL_MS, SPECULATION_INTERVAL_MS, TimeUnit.MILLISECONDS)
   }
 }
-{% endhighlight %}
+~~~
 
 
 启动listenerBus并发布 SparkListenerEnvironmentUpdate 和 SparkListenerApplicationStart 这两个事件。对这两个事件，监听器会调用onEnvironmentUpdate、onApplicationStart方法进行处理。
@@ -176,7 +176,8 @@ override def start() {
 ###RunJob
 主要调用
 
-{% highlight scala linenos %}
+~~~ scala
 dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, resultHandler, localProperties.get)
-{% endhighlight %}
+~~~
+
 来执行工作。

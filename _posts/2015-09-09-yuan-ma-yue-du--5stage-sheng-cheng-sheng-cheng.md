@@ -15,7 +15,7 @@ tags: [spark]
 > runningStages  保存正在执行的Stage，防止重复执行    
 > failedStages   保存执行失败Stage，需要重复执行    
 
-{% highlight scala linenos %}
+~~~ scala
 // Stages we need to run whose parents aren't done
 private[scheduler] val waitingStages = new HashSet[Stage]
 
@@ -24,7 +24,7 @@ private[scheduler] val runningStages = new HashSet[Stage]
 
 // Stages that must be resubmitted due to fetch failures
 private[scheduler] val failedStages = new HashSet[Stage]
-{% endhighlight %}
+~~~
 
 ###依赖关系
 调度会计算RDD之间的依赖关系，将拥有持续窄依赖的RDD归并到同一个Stage中，而宽依赖则作为划分不同Stage的标准。
@@ -61,7 +61,7 @@ Spark有两种Task:
 ###Stage类
 因为在一个Stage中所有RDD都是map，parition不会有任何改变，所以Stage类中只有一个（而不是一系列）RDD参数。（只在data上依次执行不同的map function）
 
-{% highlight scala linenos %}
+~~~ scala
 private[spark] abstract class Stage(
     val id: Int,      //Stage序号，数值越大，优先级越高
     val rdd: RDD[_],  //归属于本Stage的最后一个rdd
@@ -70,7 +70,7 @@ private[spark] abstract class Stage(
     val firstJobId: Int,        //作业ID
     val callSite: CallSite)
   extends Logging {
-{% endhighlight %}
+~~~
 
 ###Job处理    
 1. 分割Job为Stage
@@ -81,7 +81,7 @@ private[spark] abstract class Stage(
 这两个函数主要负责依赖分析，对其处理逻辑做进一步的分析。
 handleJobSubmited的主要工作是生产Stage，并根据finalStage来产生ActiveJob。
 
-{% highlight scala linenos %}
+~~~ scala
 private[scheduler] def handleJobSubmitted(jobId: Int,
     finalRDD: RDD[_],
     func: (TaskContext, Iterator[_]) => _,
@@ -124,10 +124,10 @@ private[scheduler] def handleJobSubmitted(jobId: Int,
   //提交stage
   submitWaitingStages()
 }
-{% endhighlight %}
+~~~
 
 ####newResultStage函数
-{% highlight scala linenos %}
+~~~ scala
 /**
  * Create a ResultStage associated with the provided jobId.
  */
@@ -143,9 +143,9 @@ private def newResultStage(
   updateJobIdStageIdMaps(jobId, stage)
   stage
 }
-{% endhighlight %}
+~~~
 创建Stage需要知道该Stage需要从多少Partition读入数据，这个数字直接影响需要创建多少个Task。也就是说创建Stage的时候就已经清楚该Stage需要从多少个不同的Partition读入数据，并写到多少个Partition中，输入输出的个数都已经明确。
-{% highlight scala linenos %}
+~~~ scala
 /**
  * Helper function to eliminate some code re-use when creating new stages.
  */
@@ -154,9 +154,9 @@ private def getParentStagesAndId(rdd: RDD[_], firstJobId: Int): (List[Stage], In
   val id = nextStageId.getAndIncrement()
   (parentStages, id)
 }
-{% endhighlight %}
+~~~
 ####getParentStages函数
-{% highlight scala linenos %}
+~~~ scala
 /**
  * Get or create the list of parent stages for a given RDD.  The new Stages will be created with
  * the provided firstJobId.
@@ -188,17 +188,17 @@ private def getParentStages(rdd: RDD[_], firstJobId: Int): List[Stage] = {
   }
   parents.toList
 }
-{% endhighlight %}
+~~~
 通过不停的遍历他之前的RDD,如果碰到有依赖是ShuffleMapDependency类型的，就通过getShuffleMapStage方法计算出它的Stage来。
 
 ###ActiveJob类
 
 用户所提交的job在得到DAGScheduler的调度后,会被
-{% highlight scala linenos %}
+~~~ scala
 val job = new ActiveJob(jobId, finalStage, func, partitions, callSite, listener, properties)
-{% endhighlight %}
+~~~
 包装成ActiveJob,同时会启动JobWaiter阻塞监听job的完成状况。    
-{% highlight scala linenos %}
+~~~ scala
 private[spark] class ActiveJob(
     val jobId: Int,
     val finalStage: ResultStage,
@@ -212,7 +212,7 @@ private[spark] class ActiveJob(
   val finished = Array.fill[Boolean](numPartitions)(false)
   var numFinished = 0
 }
-{% endhighlight %}
+~~~
 
 依据job中RDD的dependency和dependency属性(NarrowDependency，ShufflerDependecy)，DAGScheduler会根据依赖关系的先后产生出不同的stage DAG(result stage, shuffle map stage)。
 在每一个stage内部，根据stage产生出相应的task，包括ResultTask或是ShuffleMapTask，这些task会根据RDD中partition的数量和分布，产生出一组相应的task，并将其包装为TaskSet提交到TaskScheduler上去。
@@ -227,7 +227,7 @@ submitStage处理流程：
 > 如果所有的依赖已经完成，则提交自身所处的Stage
 > 最后会在submitMissingTasks函数中将stage封装成TaskSet通过taskScheduler.submitTasks函数提交给TaskScheduler处理。
 
-{% highlight scala linenos %}
+~~~ scala
   /** Submits stage, but first recursively submits any missing parents. */
   private def submitStage(stage: Stage) {
     val jobId = activeJobForStage(stage)
@@ -250,13 +250,13 @@ submitStage处理流程：
       abortStage(stage, "No active job for stage " + stage.id, None)
     }
   }
-{% endhighlight %}
+~~~
 这个提交stage的过程是一个递归的过程，它是先要把父stage先提交，然后把自己添加到等待队列中，直到没有父stage之后，就提交该stage中的任务。等待队列在最后的submitWaitingStages方法中提交。
 
 ###getMissingParentStages函数
 getMissingParentStages通过图的遍历，来找出所依赖的所有父Stage。
 
-{% highlight scala linenos %}
+~~~ scala
   private def getMissingParentStages(stage: Stage): List[Stage] = {
     val missing = new HashSet[Stage]
     val visited = new HashSet[RDD[_]]
@@ -288,11 +288,11 @@ getMissingParentStages通过图的遍历，来找出所依赖的所有父Stage�
     }
     missing.toList
   }
-{% endhighlight %}
+~~~
 
 ###submitMissingTasks函数     
 可见无论是哪种stage，都是对于每个stage中的每个partitions创建task，并最终封装成TaskSet，将该stage提交给taskscheduler。
-{% highlight scala linenos %}
+~~~ scala
   /** Called when stage's parents are available and we can now do its task. */
   private def submitMissingTasks(stage: Stage, jobId: Int) {
     logDebug("submitMissingTasks(" + stage + ")")
@@ -435,4 +435,4 @@ getMissingParentStages通过图的遍历，来找出所依赖的所有父Stage�
       logDebug(debugString)
     }
   }
-{% endhighlight %}
+~~~

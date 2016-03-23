@@ -27,15 +27,15 @@ TaskScheduler的主要任务是提交task集合到集群运算并汇报结果。
 在[SparkContext 粗解](/2015/09/07/yuan-ma-yue-du--3sparkcontext--cu-jie/)中介绍了在SparkContext初始化时创建TaskScheduler和DAGScheduler。这里具体描述一下其创建过程。    
 SparkContext创建过程中会调用createTaskScheduler函数来启动TaskScheduler任务调度器：    
 
-{% highlight scala linenos %}
+~~~ scala
 val (sched, ts) = SparkContext.createTaskScheduler(this, master)
-{% endhighlight %}
+~~~
 
 createTaskScheduler函数中，TaskScheduler会根据部署方式而选择不同的SchedulerBackend来处理.
 #### Local模式    
 TaskSchedulerImpl 和 LocalBackend模式    
 
-{% highlight scala linenos %}
+~~~ scala
 case "local" =>
     val scheduler = new TaskSchedulerImpl(sc, MAX_LOCAL_TASK_FAILURES, isLocal = true)
     val backend = new LocalBackend(sc.getConf, scheduler, 1)
@@ -62,24 +62,24 @@ case LOCAL_N_FAILURES_REGEX(threads, maxFailures) =>
     val backend = new LocalBackend(sc.getConf, scheduler, threadCount)
     scheduler.initialize(backend)
     (backend, scheduler)
-{% endhighlight %}
+~~~
 
 #### Spark集群模式    
 TaskSchedulerImpl 和 SparkDeploySchedulerBackend 模式    
 
-{% highlight scala linenos %}
+~~~ scala
 case SPARK_REGEX(sparkUrl) =>
     val scheduler = new TaskSchedulerImpl(sc)
     val masterUrls = sparkUrl.split(",").map("spark://" + _)
     val backend = new SparkDeploySchedulerBackend(scheduler, sc, masterUrls)
     scheduler.initialize(backend)
     (backend, scheduler)
-{% endhighlight %}
+~~~
 
 #### 本地集群模式    
 TaskSchedulerImpl 和 SparkDeploySchedulerBackend 模式    
 
-{% highlight scala linenos %}
+~~~ scala
 case LOCAL_CLUSTER_REGEX(numSlaves, coresPerSlave, memoryPerSlave) =>
     // Check to make sure memory requested <= memoryPerSlave. Otherwise Spark will just hang.
     val memoryPerSlaveInt = memoryPerSlave.toInt
@@ -99,12 +99,12 @@ case LOCAL_CLUSTER_REGEX(numSlaves, coresPerSlave, memoryPerSlave) =>
       localCluster.stop()
     }
     (backend, scheduler)
-{% endhighlight %}
+~~~
 
 #### Yarn-Cluster模式    
 YarnClusterScheduler 和 CoarseGrainedSchedulerBackend 模式
 
-{% highlight scala linenos %}
+~~~ scala
 case "yarn-standalone" | "yarn-cluster" =>
     if (master == "yarn-standalone") {
       logWarning(
@@ -133,12 +133,12 @@ case "yarn-standalone" | "yarn-cluster" =>
     }
     scheduler.initialize(backend)
     (backend, scheduler)
-{% endhighlight %}
+~~~
 
 #### Yarn-Client模式    
 YarnClientClusterScheduler 和 YarnClientSchedulerBackend 模式     
 
-{% highlight scala linenos %}
+~~~ scala
       case "yarn-client" =>
         val scheduler = try {
           val clazz = Utils.classForName("org.apache.spark.scheduler.cluster.YarnScheduler")
@@ -164,12 +164,12 @@ YarnClientClusterScheduler 和 YarnClientSchedulerBackend 模式
 
         scheduler.initialize(backend)
         (backend, scheduler)
-{% endhighlight %}
+~~~
 
 #### Mesos模式    
 TaskSchedulerImpl 和 MesosSchedulerBackend 模式
 
-{% highlight scala linenos %}
+~~~ scala
       case mesosUrl @ MESOS_REGEX(_) =>
         MesosNativeLibrary.load()
         val scheduler = new TaskSchedulerImpl(sc)
@@ -182,7 +182,7 @@ TaskSchedulerImpl 和 MesosSchedulerBackend 模式
         }
         scheduler.initialize(backend)
         (backend, scheduler)
-{% endhighlight %}
+~~~
 
 ### TaskScheduler、TaskSchedulerImpl、SchedulerBackend之间的关系    
 TaskScheduler类负责任务调度资源的分配    

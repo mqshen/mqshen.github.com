@@ -19,9 +19,9 @@ DAG在切分stage的时候是依照出现的shuffle为界限的。
 DAGScheduler是在SparkContext中实例化的。
 它的构造函数中的主要参数为 SparkContext 和 TaskScheduler。
 
-{% highlight scala linenos %}
+~~~ scala
 def this(sc: SparkContext) = this(sc, sc.taskScheduler)
-{% endhighlight %}
+~~~
 
 
 ###作业提交与DAGScheduler操作   
@@ -40,24 +40,24 @@ TaskSchedulerImpl会根据Spark当前的运行模式来运行Task。
 
 DAGScheduler的submitJob会创建JobSubmitted的event发送给
 
-{% highlight scala linenos %}
+~~~ scala
 private[scheduler] val eventProcessLoop = new DAGSchedulerEventProcessLoop(this)
-{% endhighlight %}
+~~~
 他会调用
-{% highlight scala linenos %}
+~~~ scala
 private def doOnReceive(event: DAGSchedulerEvent): Unit = event match {
 
   case JobSubmitted(jobId, rdd, func, partitions, callSite, listener, properties) =>
     dagScheduler.handleJobSubmitted(jobId, rdd, func, partitions, callSite, listener, properties)
 
-{% endhighlight %}
+~~~
 来处理event
 
 ###JobWaiter
 
 JobWaiter继承自JobListener，实现了taskSucceeded和jobFailed函数。
 
-{% highlight scala linenos %}
+~~~ scala
 
 override def taskSucceeded(index: Int, result: Any): Unit = synchronized {
 
@@ -78,5 +78,5 @@ override def jobFailed(exception: Exception): Unit = synchronized {
   jobResult = JobFailed(exception)
   this.notifyAll()
 }
-{% endhighlight %}
+~~~
 

@@ -8,14 +8,14 @@ tags: [spark]
 {% include JB/setup %}
 在Spark中要缓存中间结果时我们会调用RDD的cache方法。那我们来看一下RDD中的cache方法。    
 
-{% highlight scala linenos %}
+~~~ scala
 /** Persist this RDD with the default storage level (`MEMORY_ONLY`). */
 def cache(): this.type = persist()
-{% endhighlight %}
+~~~
 
 那我们来看一下persist方法。    
 
-{% highlight scala linenos %}
+~~~ scala
 
 /** Persist this RDD with the default storage level (`MEMORY_ONLY`). */
 def persist(): this.type = persist(StorageLevel.MEMORY_ONLY)
@@ -61,10 +61,10 @@ private def persist(newLevel: StorageLevel, allowOverride: Boolean): this.type =
   storageLevel = newLevel
   this
 }
-{% endhighlight %}
+~~~
 
 SparkContext中的persistRDD代码：
-{% highlight scala linenos %}
+~~~ scala
 /**
  * Register an RDD to be persisted in memory and/or disk storage
  */
@@ -76,18 +76,18 @@ private[spark] def persistRDD(rdd: RDD[_]) {
   }
   persistentRdds(rdd.id) = rdd
 }
-{% endhighlight %}
+~~~
 
 其中persistentRdds是一个map
 
-{% highlight scala linenos %}
+~~~ scala
 private[spark] val persistentRdds = new TimeStampedWeakValueHashMap[Int, RDD[_]]
-{% endhighlight %}
+~~~
 
 现在只是声明这个RDD需要缓存，具体需要到RDD执行的时候才能被缓存。入口是Task的runTask方法。
 
 以ResultTask为例
-{% highlight scala linenos %}
+~~~ scala
 override def runTask(context: TaskContext): U = {
   // Deserialize the RDD and the func using the broadcast variables.
   val deserializeStartTime = System.currentTimeMillis()
@@ -99,11 +99,11 @@ override def runTask(context: TaskContext): U = {
   metrics = Some(context.taskMetrics)
   func(context, rdd.iterator(partition, context))
 }
-{% endhighlight %}
+~~~
 
 它调用的RDD的iterator方法
 
-{% highlight scala linenos %}
+~~~ scala
 /**
  * Internal method to this RDD; will read from cache if applicable, or otherwise compute it.
  * This should ''not'' be called by users directly, but is available for implementors of custom
@@ -116,11 +116,11 @@ final def iterator(split: Partition, context: TaskContext): Iterator[T] = {
     computeOrReadCheckpoint(split, context)
   }
 }
-{% endhighlight %}
+~~~
 
 如果设置的storageLevel那么就从CacheManager中取数据。那么我们就来看看CacheManager中的getOrCompute方法：
 
-{% highlight scala linenos %}
+~~~ scala
 /** Gets or computes an RDD partition. Used by RDD.iterator() when an RDD is cached. */
 def getOrCompute[T](
     rdd: RDD[T],
@@ -183,6 +183,6 @@ def getOrCompute[T](
       }
   }
 }
-{% endhighlight %}
+~~~
 
 这里使用putInBlockManager把计算结果缓存如blockManager。
