@@ -7,7 +7,7 @@ tags: []
 ---
 {% include JB/setup %}
 
-###Task
+### Task ### 
 
 Spark有两种Task:    
  1. ShuffleMapTask    
@@ -15,17 +15,17 @@ Spark有两种Task:
 
 Task是Spark的Executor执行单元，介于DAGScheduler和TaskScheduler中间的接口。在DAGScheduler中，需要把DAG中的每个stage的每个partitions封装成task，再把这些taskset提交给TaskScheduler。    
 
-{% highlight scala linenos %}
+~~~ scala
 private[spark] abstract class Task[T](
     val stageId: Int,  //这个task属于那个stage
     val stageAttemptId: Int,
     val partitionId: Int,  //RDD中的序号
     internalAccumulators: Seq[Accumulator[Long]]) extends Serializable
-{% endhighlight %}
+~~~
 
 由于Task需要保证工作节点具备本次Task需要的其他依赖注册到SparkContext下，所以Task的伴生对象提供了序列化和反序列化应用依赖的jar包的方法，来写入写出依赖流。
 
-{% highlight scala linenos %}
+~~~ scala
 private[spark] object Task {
   /**
    * Serialize a task and the current app dependencies (files and JARs added to the SparkContext)
@@ -40,13 +40,13 @@ private[spark] object Task {
 
   def deserializeWithDependencies(serializedTask: ByteBuffer)
 
-{% endhighlight %}
+~~~
 
-####ShuffleMapTask    
+#### ShuffleMapTask ####   
 
 对应于ShuffleMap Stage, 产生的结果作为其他stage的输入。
 
-{% highlight scala linenos %}
+~~~ scala
 /**
 * A ShuffleMapTask divides the elements of an RDD into multiple buckets (based on a partitioner
 * specified in the ShuffleDependency).
@@ -68,14 +68,14 @@ private[spark] class ShuffleMapTask(
     internalAccumulators: Seq[Accumulator[Long]])
   extends Task[MapStatus](stageId, stageAttemptId, partition.index, internalAccumulators)
   with Logging {
-{% endhighlight %}
+~~~
 
-####ResultTask    
+#### ResultTask ####   
 
 对Result Stage直接产生结果    
 
 
-{% highlight scala linenos %}
+~~~ scala
 /**
  * A task that sends back the output to the driver application.
  *
@@ -100,12 +100,12 @@ private[spark] class ResultTask[T, U](
     internalAccumulators: Seq[Accumulator[Long]])
   extends Task[U](stageId, stageAttemptId, partition.index, internalAccumulators)
   with Serializable {
-{% endhighlight %}
+~~~
 
-####TaskSet    
+#### TaskSet ####   
 TaskSet是用于封装一个stage的所有的task的数据结构，用来方便的提交给TaskScheduler。    
 
-{% highlight scala linenos %}
+~~~ scala
 /**
  * A set of tasks submitted together to the low-level TaskScheduler, usually representing
  * missing partitions of a particular stage.
@@ -120,20 +120,20 @@ private[spark] class TaskSet(
 
   override def toString: String = "TaskSet " + id
 }
-{% endhighlight %}
+~~~
 
 
-###Executor注册到Driver    
+### Executor注册到Driver ###   
 
 Driver发送LaunchTask消息被Executor接收，Executor会使用launchTask对消息进行处理。
 不过在这个过程之前，如果Executor没有注册到Driver，即便接收到LaunchTask指令，也不会做任务处理。所以我们要先搞清楚，Executor是如何在Driver侧进行注册的。
 
-####Application注册    
+#### Application注册 ####   
 Executor的注册是发生在Application的注册过程中的，我们以Standalone模式为例：    
 1. SparkContext创建schedulerBackend和taskScheduler，schedulerBackend作为TaskScheduler对象的一个成员存在     
 2. 在TaskScheduler对象调用start函数时，其实调用了backend.start()函数    
 3. backend.start()函数中启动了AppClient，AppClient的其中一个参数ApplicationDescription就是封装的运行CoarseGrainedExecutorBackend的命令
 4. AppClient内部启动了一个ClientActor，这个ClientActor启动之后，会尝试向Master发送一个指令actor ! RegisterApplication(appDescription) 注册一个Application
 
-#####AppClient向Master提交Application    
+##### AppClient向Master提交Application #####   
 

@@ -115,7 +115,7 @@ hadoop的日志在$hadoop_home/logs/目录下
     
 ~~~ shell
     $ sudo yum groupinstall -y "Development Tools"
-    $ sudo yum install -y python-devel java-1.7.0-openjdk-devel zlib-devel libcurl-devel openssl-devel cyrus-sasl-devel cyrus-sasl-md5 apr-devel subversion-devel apr-utils-devel
+    $ sudo yum install -y python-devel java-1.7.0-openjdk-devel zlib-devel libcurl-devel openssl-devel cyrus-sasl-devel cyrus-sasl-md5 apr-devel subversion-devel apr-util-devel
 ~~~
 
 Mesos编译需要maven所以我们还需要安装maven这里就不多说了
@@ -199,4 +199,6 @@ slaves
 ~~~
 
     
+添加mysql driver
 
+--driver-class-path /home/nginx/lib/mysql-connector-java-5.1.16.jar --jars /home/nginx/lib/mysql-connector-java-5.1.16.jar
