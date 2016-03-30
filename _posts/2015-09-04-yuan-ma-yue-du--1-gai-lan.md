@@ -7,7 +7,7 @@ tags: [spark]
 ---
 {% include JB/setup %}
 
-####基本概念
+#### 基本概念 #### 
 
 || RDD || resilient distributed dataset ||
 || Operation || 作用在RDD上的transformation和action ||
@@ -19,9 +19,9 @@ tags: [spark]
 || Wide Dependency || 宽依赖，一个子RDD的分区依赖于父RDD的多个分区或所有分区，也就是说存在一个父RDD的一个分区对应一个子RDD的多个分区，如groupByKey等操作则产生宽依赖操作； ||
 || Cache Management || 缓存管理 ||
 
-###Spark运行设计的组件
+### Spark运行设计的组件 ### 
 
 ![组件]({{ BASE_PATH }}/assets/images/spark/overview.png)
 
-###运行
+### 运行 ### 
 ![运行]({{ BASE_PATH }}/assets/images/spark/run.png)
